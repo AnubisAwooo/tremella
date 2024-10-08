@@ -1,0 +1,18 @@
+[package]
+name = "test-address"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+bs58 = { version = "0.5", features = ["check"] }
+hex = "0.4"
+sha256 = "1"
+wif = "0"
+bip39 = { version = "2", features = ["rand"] }
+rand = "0"
+sha2 = "0"
+pbkdf2 = "0"
+hmac = "0"
+hdwallet = "0"
