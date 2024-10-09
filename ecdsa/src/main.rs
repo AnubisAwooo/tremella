@@ -64,8 +64,8 @@ impl<'a> Point<'a> {
             .filter(|(x, y)| (y * y - (x * x * x + p.a * x + p.b)) % p.p == 0)
             .collect::<Vec<_>>();
         let mut ps = Vec::with_capacity(points.len() + 1);
-        ps.push(Point::infinity(*p));
-        ps.extend(points.iter().map(|(x, y)| Point::new(*p, *x, *y)));
+        ps.push(Point::infinity(p));
+        ps.extend(points.iter().map(|(x, y)| Point::new(p, *x, *y)));
         ps
     }
 }
@@ -84,8 +84,24 @@ impl<'a> Add for Point<'a> {
 
     fn add(self, rhs: Self) -> Self::Output {
         match (self, rhs) {
-            (Point::Infinity(p), _) => Point::Infinity(p),
-            (_, Point::Infinity(p)) => Point::Infinity(p),
+            (Point::Infinity(p), Point::Infinity(p2)) => {
+                if p != p2 {
+                    panic!("param is not same");
+                }
+                Point::Infinity(p)
+            }
+            (Point::Infinity(p), Point::Point { p: p2, x, y }) => {
+                if p != p2 {
+                    panic!("param is not same");
+                }
+                Point::Point { p, x, y }
+            }
+            (Point::Point { p, x, y }, Point::Infinity(p2)) => {
+                if p != p2 {
+                    panic!("param is not same");
+                }
+                Point::Point { p, x, y }
+            }
             (
                 Point::Point { p, x: x1, y: y1 },
                 Point::Point {
@@ -112,7 +128,7 @@ impl<'a> Add for Point<'a> {
                 // println!("k: {}/{}", k1, k2);
 
                 fn positive(mut v: i64, p: i64) -> i64 {
-                    v = v % p;
+                    v %= p;
                     loop {
                         if 0 <= v {
                             break;
@@ -203,12 +219,12 @@ fn print_points(param: &Param, points: &[Point]) {
             .collect::<Vec<_>>()
             .join(",")
     );
-    println!("");
+    println!();
 }
 
 fn main() {
     fn positive(mut v: i64, n: i64) -> i64 {
-        v = v % n;
+        v %= n;
         loop {
             if 0 <= v {
                 break;
@@ -295,7 +311,7 @@ fn main() {
     println!("{} * 18 = {}", p, p * 18);
     println!("{} * 19 = {}", p, p * 19);
     println!("{} * 20 = {}", p, p * 20);
-    println!("");
+    println!();
 
     let param = Param::new(11, 1, 6);
     let point = Point::Infinity(&param);
