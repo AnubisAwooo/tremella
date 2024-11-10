@@ -3,12 +3,10 @@ use std::{
     ops::{Add, Mul},
 };
 
-// const P: i64 = 257; // 模数
-// const A: i64 = 0; // 椭圆曲线参数 y^2 = x^3 + ax + b
-// const B: i64 = 7; // 椭圆曲线参数 y^2 = x^3 + 7
+mod ed25519;
 
-// const G: Point = Point::new(1, 120); // 基点
-
+// 椭圆曲线参数 y^2 = x^3 + ax + b
+// 椭圆曲线参数 y^2 = x^3 + 7
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 struct Param {
     p: i64,
@@ -332,7 +330,7 @@ fn main() {
         let random = 3; // 随机整数
         let c1 = g * random; // 提供加密随机数
         println!("c1: {} * {} = {}", g, random, c1);
-        let c2 = m + p * random; // 明文和公钥加入计算 c2 = m + p * k = m + g * key * k
+        let c2 = m + p * random; // 明文和公钥加入计算 c2 = m + p * random = m + g * key * random
         println!("c2: {} + {} * {} = {}", m, p, random, c2);
 
         println!("cm: ({},{})", c1, c2); // 密文
@@ -349,7 +347,7 @@ fn main() {
 
         let random = 5; // 随机整数
         let p1 = g * random; // 提供随机数信息
-        let hash = 5;
+        let hash = 5; // 明文
         let s = (hash * key) as i64 + random as i64; // 提供私钥信息
         println!("s: {}", s);
 
@@ -444,7 +442,7 @@ fn main() {
         let random = 5; // 随机整数
         let p1 = g * random;
         let r = p1.get_x(); // 提供随机数信息
-        let hash = 5;
+        let hash = 5; // 明文
         println!("r: {} <- {} ", r, p1);
         let s = positive(
             mod_inv(1, random as i64, n) * (hash as i64 + key as i64 * r),
@@ -476,7 +474,7 @@ fn main() {
 
         println!("signature: ({}, {})", r, s); // 签名
 
-        let pp = g * s + p * hash;
+        let pp = g * s + p * hash; // g * s +  p * hash = g * (random - hash * key) + (g * key) * hash = g * random
         println!("pp: {}", pp);
         assert_eq!(r, pp);
     }
@@ -499,7 +497,7 @@ fn main() {
 
         println!("signature: ({}, {})", r, s); // 签名
 
-        let pp = g * s + p * hash + p2 * hash;
+        let pp = g * s + p * hash + p2 * hash; // g * s + p * hash + p2 * hash = g * (random - hash * key) + g * (random - hash * key2) + (g * key1) * hash + (g * key2) * hash
         println!("pp: {}", pp);
         assert_eq!(r * 2, pp);
     }
